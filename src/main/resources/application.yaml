@@ -1,0 +1,37 @@
+
+server:
+  port: 8084
+
+spring:
+  application:
+    name: ms-campuslab-audit
+
+  datasource:
+    url: ${DB_URL:jdbc:h2:file:./data/campuslab-audit}
+    driver-class-name: org.h2.Driver
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092,localhost:19093,localhost:19094}
+
+    consumer:
+      group-id: campuslab-audit-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    listener:
+      ack-mode: manual_immediate
+
+campuslab:
+  kafka:
+    topics:
+      booking-events: campuslab.booking.events
+      occupancy-events: campuslab.occupancy.events
