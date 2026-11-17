@@ -6,7 +6,6 @@ import cl.duoc.campuslab.audit.service.AuditEventService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ public class AuditKafkaConsumer {
 
     @KafkaListener(
             topics = "${campuslab.kafka.topics.booking-events}",
-            groupId = "campuslab-audit-group"
+            groupId = "${spring.kafka.consumer.group-id}"
     )
     public void consume(
             ConsumerRecord<String, String> record,
@@ -44,7 +43,7 @@ public class AuditKafkaConsumer {
                 BookingKafkaEvent.class
         );
 
-        // 2. Comprobar que el evento tenga sus datos básicos.
+        // 2. Comprobar que el evento tenga sus datos basicos.
         if (event.eventId() == null ||
                 event.eventId().isBlank() ||
                 event.eventType() == null ||
@@ -66,7 +65,7 @@ public class AuditKafkaConsumer {
                 event.timestamp()
         );
 
-        // 4. Confirmar el offset después de guardar.
+        // 4. Confirmar el offset despues de guardar.
         acknowledgment.acknowledge();
 
         log.info(
