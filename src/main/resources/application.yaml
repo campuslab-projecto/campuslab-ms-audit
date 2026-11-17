@@ -21,11 +21,16 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092,localhost:19093,localhost:19094}
 
     consumer:
-      group-id: campuslab-audit-group
+      group-id: ${CAMPUSLAB_AUDIT_GROUP:campuslab-audit-group}
       auto-offset-reset: earliest
       enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
 
     listener:
       ack-mode: manual_immediate
@@ -33,5 +38,5 @@ spring:
 campuslab:
   kafka:
     topics:
-      booking-events: campuslab.booking.events
+      booking-events: ${CAMPUSLAB_AUDIT_BOOKING_TOPIC:campuslab.booking.events}
       occupancy-events: campuslab.occupancy.events
