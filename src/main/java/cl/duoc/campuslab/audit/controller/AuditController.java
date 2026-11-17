@@ -1,5 +1,6 @@
 
 package cl.duoc.campuslab.audit.controller;
+
 import cl.duoc.campuslab.audit.entity.AuditEvent;
 import cl.duoc.campuslab.audit.service.AuditEventService;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/audit")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuditController {
 
     private final AuditEventService auditEventService;
