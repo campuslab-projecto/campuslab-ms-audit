@@ -3,12 +3,14 @@ package cl.duoc.campuslab.audit.kafka;
 
 import cl.duoc.campuslab.audit.dto.BookingKafkaEvent;
 import cl.duoc.campuslab.audit.service.AuditEventService;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+
 import tools.jackson.databind.ObjectMapper;
 
 @Component
@@ -37,13 +39,13 @@ public class AuditKafkaConsumer {
             Acknowledgment acknowledgment
     ) throws Exception {
 
-        // 1. Convertir el JSON recibido a nuestro DTO.
+        // 1. Convertir JSON recibido a DTO.
         BookingKafkaEvent event = objectMapper.readValue(
                 record.value(),
                 BookingKafkaEvent.class
         );
 
-        // 2. Comprobar que el evento tenga sus datos basicos.
+        // 2. Validar datos obligatorios.
         if (event.eventId() == null ||
                 event.eventId().isBlank() ||
                 event.eventType() == null ||
@@ -56,22 +58,24 @@ public class AuditKafkaConsumer {
             );
         }
 
-        // 3. Guardar el evento en H2.
+        // 3. Guardar evento incluyendo resourceId.
         auditEventService.saveEvent(
                 event.eventId(),
                 event.eventType(),
                 event.bookingId(),
+                event.resourceId(),
                 event.status(),
                 event.timestamp()
         );
 
-        // 4. Confirmar el offset despues de guardar.
+        // 4. Confirmar offset después de guardar.
         acknowledgment.acknowledge();
 
         log.info(
-                "AUDITORIA KAFKA: Evento {} | Reserva {} | Particion {} | Offset {}",
+                "AUDITORIA KAFKA: Evento {} | Reserva {} | Recurso {} | Particion {} | Offset {}",
                 event.eventType(),
                 event.bookingId(),
+                event.resourceId(),
                 record.partition(),
                 record.offset()
         );
