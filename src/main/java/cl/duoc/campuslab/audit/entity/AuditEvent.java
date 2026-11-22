@@ -26,6 +26,8 @@ public class AuditEvent {
 
     private Long bookingId;
 
+    private String resourceId;
+
     private String status;
 
     private LocalDateTime timestamp;
@@ -43,9 +45,28 @@ public class AuditEvent {
             String status,
             LocalDateTime timestamp
     ) {
+        this(
+                eventId,
+                eventType,
+                bookingId,
+                null,
+                status,
+                timestamp
+        );
+    }
+
+    public AuditEvent(
+            String eventId,
+            String eventType,
+            Long bookingId,
+            String resourceId,
+            String status,
+            LocalDateTime timestamp
+    ) {
         this.eventId = eventId;
         this.eventType = eventType;
         this.bookingId = bookingId;
+        this.resourceId = resourceId;
         this.status = status;
         this.timestamp = timestamp;
         this.receivedAt = LocalDateTime.now();
@@ -65,6 +86,10 @@ public class AuditEvent {
 
     public Long getBookingId() {
         return bookingId;
+    }
+
+    public String getResourceId() {
+        return resourceId;
     }
 
     public String getStatus() {

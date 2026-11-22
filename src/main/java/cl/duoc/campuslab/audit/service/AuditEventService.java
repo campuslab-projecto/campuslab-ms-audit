@@ -4,7 +4,6 @@ package cl.duoc.campuslab.audit.service;
 import cl.duoc.campuslab.audit.entity.AuditEvent;
 import cl.duoc.campuslab.audit.repository.AuditEventRepository;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,15 +19,31 @@ public class AuditEventService {
         this.repository = repository;
     }
 
-    // ============================================
-    // 1. GUARDAR EVENTO RECIBIDO DESDE KAFKA
-    // ============================================
+    // Guardar evento recibido desde Kafka
+    @Transactional
+    public void saveEvent(
+            String eventId,
+            String eventType,
+            Long bookingId,
+            String status,
+            LocalDateTime timestamp
+    ) {
+        saveEvent(
+                eventId,
+                eventType,
+                bookingId,
+                null,
+                status,
+                timestamp
+        );
+    }
 
     @Transactional
     public void saveEvent(
             String eventId,
             String eventType,
             Long bookingId,
+            String resourceId,
             String status,
             LocalDateTime timestamp
     ) {
@@ -42,6 +57,7 @@ public class AuditEventService {
                 eventId,
                 eventType,
                 bookingId,
+                resourceId,
                 status,
                 timestamp
         );
@@ -49,19 +65,13 @@ public class AuditEventService {
         repository.saveAndFlush(event);
     }
 
-    // ============================================
-    // 2. CONSULTAR TODOS LOS EVENTOS
-    // ============================================
-
+    // Consultar todos los eventos
     @Transactional(readOnly = true)
     public List<AuditEvent> getAllEvents() {
         return repository.findAllByOrderByReceivedAtDesc();
     }
 
-    // ============================================
-    // 3. CONSULTAR EVENTOS POR RESERVA
-    // ============================================
-
+    // Consultar eventos por reserva
     @Transactional(readOnly = true)
     public List<AuditEvent> getEventsByBookingId(Long bookingId) {
         return repository.findByBookingIdOrderByReceivedAtDesc(
